@@ -1,24 +1,32 @@
-tasks.register<Copy>("natives") {
-    for (dep in configurations.runtimeClasspath.get().files) {
-        from(zipTree(dep).files)
-        include("**/*.dll", "**/*.so", "**/*.jnilib", "**/*.dylib")
-        into(File(buildDir, "libs"))
-    }
-}
-
-tasks.named("build") {
-    dependsOn("natives")
-}
-
 plugins {
     id("java")
     id("application")
+    id("com.diffplug.spotless") version "7.0.4"
 }
 
-repositories {
-    mavenCentral()
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(25))
+    }
 }
+
+// give your project a name
+archivesBaseName = "GURK NUKEM"
+version = "v0.0.1"
+mainClassName = "com.litiengine.gurknukem.Program"
+
 
 dependencies {
     implementation 'de.gurkenlabs:litiengine'
+}
+
+tasks.withType(Copy).all {
+    duplicatesStrategy 'exclude'
+}
+
+sourceSets {
+    main.java.srcDir "src"
+    main.resources.srcDirs = ["sprites", "audio", "maps", "misc"]
+
+    // main.resources.includes = ["game.litidata"]
 }
